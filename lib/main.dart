@@ -17,6 +17,9 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       title: 'Flutter Timer',
+
+      /// On utilise un bloc provider pour préciser quel bloc on utilise
+      /// avec quel UI
       home: BlocProvider(
         create: (context) => TimerBloc(ticker: Ticker()),
         child: Timer(),
@@ -45,6 +48,7 @@ class Timer extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 100.0),
                   child: Center(
+                    /// On trouve le  le Bloc Builder pour construire l'UI avec le state.duration
                     child: BlocBuilder<TimerBloc, TimerState>(
                       builder: (context, state) {
                         final String minutesStr = ((state.duration / 60) % 60)
@@ -63,6 +67,8 @@ class Timer extends StatelessWidget {
                     ),
                   ),
                 ),
+
+                /// Un autre BlocBuilder, pour les boutons Resume Pause & Restart
                 BlocBuilder<TimerBloc, TimerState>(
                   buildWhen: (previousState, state) =>
                       state.runtimeType != previousState.runtimeType,
@@ -86,6 +92,7 @@ class Actions extends StatelessWidget {
     );
   }
 
+  /// on renvoie une différente UI en fonction du state du Bloc
   List<Widget> _mapStateToActionButtons({
     TimerBloc timerBloc,
   }) {
@@ -95,6 +102,8 @@ class Actions extends StatelessWidget {
         FloatingActionButton(
           child: Icon(Icons.play_arrow),
           onPressed: () =>
+
+              /// Question : Je vois le terme Add, ca veut dire qu'on peut récupérer la liste des states par lesquels sont passer le bloc?
               timerBloc.add(TimerStarted(duration: currentState.duration)),
         ),
       ];
@@ -135,6 +144,7 @@ class Actions extends StatelessWidget {
   }
 }
 
+/// Background utilisant le package wave
 class Background extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
+/// Les events permettent d'intercepté les interactions UI pour les traiter dans le bloc
+/// Seuls les Events Ticked et Started ont une duration car ils sont nécéssaire
+/// dans leurs process dans le fichier timer_bloc.dart
+///Classe mètre qui sert pour l'héritage
 abstract class TimerEvent extends Equatable {
   const TimerEvent();
 

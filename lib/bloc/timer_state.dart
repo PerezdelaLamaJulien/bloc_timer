@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+/// Les State permet de savoir comment est l'application actuelement,
+/// de faire les traitements nécéssaires et de modifier l'UI en fonction des events
 abstract class TimerState extends Equatable {
   final int duration;
 

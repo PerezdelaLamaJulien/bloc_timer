@@ -16,6 +16,14 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
         super(TimerInitial(_duration));
 
   @override
+  Future<void> close() {
+    _tickerSubscription?.cancel();
+    return super.close();
+  }
+
+  /// Je connaissais pas le mot clé yield, de ce que j'ai compris il permet de
+  /// retourner une valeur d'un stream tout en le laissant continuer à executer
+  @override
   Stream<TimerState> mapEventToState(
     TimerEvent event,
   ) async* {
@@ -32,12 +40,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     }
   }
 
-  @override
-  Future<void> close() {
-    _tickerSubscription?.cancel();
-    return super.close();
-  }
-
+  ///Ici on démarre un nouveau Timer en initialisant un nouveau TickerSubscription
   Stream<TimerState> _mapTimerStartedToState(TimerStarted start) async* {
     yield TimerRunInProgress(start.duration);
     _tickerSubscription?.cancel();
@@ -46,12 +49,14 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
         .listen((duration) => add(TimerTicked(duration: duration)));
   }
 
+  /// Ici on vérifier que le tick n'était pas le dernier sinon on renvoie un event Complete
   Stream<TimerState> _mapTimerTickedToState(TimerTicked tick) async* {
     yield tick.duration > 0
         ? TimerRunInProgress(tick.duration)
         : TimerRunComplete();
   }
 
+  ///Après avoir vérifier que le timer était en route on le met en pause
   Stream<TimerState> _mapTimerPausedToState(TimerPaused event) async* {
     if (state is TimerRunInProgress) {
       _tickerSubscription?.pause();
@@ -59,11 +64,13 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     }
   }
 
+  /// Ici on annule le ticker actuel et on en lance un nouveau
   Stream<TimerState> _mapTimerResetToState(TimerReset reset) async* {
     _tickerSubscription?.cancel();
     yield TimerInitial(_duration);
   }
 
+  /// Après avoir vérifier que le timer était bien en pause on le relance
   Stream<TimerState> _mapTimerResumedToState(TimerResumed resume) async* {
     if (state is TimerRunPause) {
       _tickerSubscription?.resume();
